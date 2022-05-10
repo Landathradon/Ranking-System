@@ -1,0 +1,194 @@
+{
+  "ClanRankValues": [
+    {"GUEST":  "Guest"},
+    {"CLAN_RANK_1":  "Adventurer"},
+    {"CLAN_RANK_2":  "Striker"},
+    {"CLAN_RANK_3":  "Worker"},
+    {"CLAN_RANK_4":  "Knight"},
+    {"CLAN_RANK_5":  "Gatherer"},
+    {"CLAN_RANK_6":  "Paladin"},
+    {"CLAN_RANK_7":  "Collector"},
+    {"CLAN_RANK_8":  "Maxed"},
+    {"CLAN_RANK_9":  "TzKal"},
+    {"CLAN_RANK_10":  "Archer"},
+    {"CLAN_RANK_11":  "Legend"},
+    {"CLAN_RANK_12":  "Captain"},
+    {"CLAN_RANK_13":  "General"},
+    {"CLAN_RANK_14":  "Master"},
+    {"ADMINISTRATOR":  "Administrator"},
+    {"DEPUTY_OWNER":  "Deputy Owner"},
+    {"OWNER":  "Owner"},
+    {"JMOD":  "JMod"}
+  ],
+  "Ranks": [
+    {
+      "RankName": "Worker",
+      "RankIcon": "Worker",
+      "RankPriority": 1,
+      "RankType": "Skiller",
+      "RankRequirements": [
+        {"Type": "Total Level", "Value": 1500},
+        {"Type": "Achievement Diary", "Difficulty": "Hard","Value": 6},
+        {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+          {"Type": "Boss killcount", "Boss": "Wintertodt", "Value": 100},
+          {"Type": "Boss killcount", "Boss": "Tempoross", "Value": 100}
+        ]}
+      ]
+    },
+    {
+      "RankName": "Gatherer",
+      "RankIcon": "Gatherer",
+      "RankPriority": 3,
+      "RankType": "Skiller",
+      "RankRequirements": [
+        {"Type": "Total Level", "Value": 1750},
+        {"Type": "Base Stats", "Value": 70},
+        {"Type": "Achievement Diary", "Difficulty": "Hard", "Value": 12},
+        {"Type": "Achievement Diary", "Difficulty": "Elite", "Value": 2},
+        {"Type": "Items", "Value": "Graceful hood"},
+        {"Type": "Items", "Value": "Graceful top"},
+        {"Type": "Items", "Value": "Graceful legs"},
+        {"Type": "Items", "Value": "Graceful boots"},
+        {"Type": "Items", "Value": "Graceful gloves"},
+        {"Type": "Items", "Value": "Graceful cape"}
+      ]
+    },
+    {
+      "RankName": "Collector",
+      "RankIcon": "Collector",
+      "RankPriority": 5,
+      "RankType": "Skiller",
+      "RankRequirements": [
+        {"Type": "Total Level", "Value": 2000},
+        {"Type": "Base Stats", "Value": 80},
+        {"Type": "Achievement Diary", "Difficulty": "Elite", "Value": 6},
+        {"Type": "Items", "Value": "Pharaoh's sceptre"},
+        {"Type": "Items", "Value": "Quest point cape"}
+      ]
+    },
+    {
+      "RankName": "Maxed",
+      "RankIcon": "Maxed",
+      "RankPriority": 7,
+      "RankType": "Skiller",
+      "RankRequirements": [
+        {"Type": "Total Level", "Value": 2277},
+        {"Type": "Items", "Value": "Achievement diary cape"}
+      ]
+    },
+    {
+      "RankName": "Striker",
+      "RankIcon": "Striker",
+      "RankPriority": 2,
+      "RankType": "Pvm",
+      "RankRequirements": [
+        {"Type": "Achieve amount", "MinReqNeeded": 2, "Value": [
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Boss killcount", "Boss": "Dagannoth Rex", "Value": 128},
+            {"Type": "Items", "Value": "Berserker Ring"}
+          ]},
+          {"Type": "Boss killcount", "Boss": "Barrows Chests", "Value": 100},
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Items", "Value": "Black Mask"},
+            {"Type": "Items", "Value": "Slayer Helm"}
+          ]},
+          {"Type": "Items", "Value": "Fire Cape"}
+        ]}
+      ]
+    },
+    {
+      "RankName": "Knight",
+      "RankIcon": "Knight",
+      "RankPriority": 4,
+      "RankType": "Pvm",
+      "RankRequirements": [
+        {"Type": "Items", "Value": "Fire Cape"},
+        {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+          {"Type": "Items", "Value": "Trident of the seas"},
+          {"Type": "Items", "Value": "Trident of the swamp"},
+          {"Type": "Items", "Value": "Trident of the seas e"},
+          {"Type": "Items", "Value": "Trident of the swamp e"}
+        ]},
+        {"Type": "Items", "Value": "Abyssal Whip"},
+        {"Type": "Achieve amount", "MinReqNeeded": 3, "Value": [
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Boss killcount combined", "Bosses": ["General Graardor", "K'ril Tsutsaroth", "Commander Zilyana", "Kree'arra"], "Value": 200},
+            {"Type": "Unique Items", "MultipleBosses": true, "Value": 2, "Bosses": ["General Graardor", "K'ril Tsutsaroth", "Commander Zilyana", "Kree'arra"]}
+          ]},
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Boss killcount", "Boss": "Zulrah", "Value": 100},
+            {"Type": "Unique Items", "MultipleBosses": false, "Value": 2, "Boss": "Zulrah"}
+          ]},
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Boss killcount", "Boss": "Vorkath", "Value": 50},
+            {"Type": "Items", "Value": "Vorkath head"},
+            {"Type": "Items", "Value": "Ava's assembler"}
+          ]},
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Boss killcount combined", "Bosses": ["Chambers of Xeric", "Chambers of Xeric: Challenge Mode"], "Value": 50},
+            {"Type": "Unique Items", "MultipleBosses": false, "Value": 1, "Boss": "Chambers of Xeric"}
+          ]},
+          {"Type": "Combat achievements", "Multiple": true, "Value": 30, "Difficulty": "Medium"}
+        ]}
+      ]
+    },
+    {
+      "RankName": "Paladin",
+      "RankIcon": "Paladin",
+      "RankPriority": 6,
+      "RankType": "Pvm",
+      "RankRequirements": [
+        {"Type": "Items", "Value": "Dragon warhammer"},
+        {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+          {"Type": "Items", "Value": "Trident of the swamp"},
+          {"Type": "Items", "Value": "Trident of the swamp e"}
+        ]},
+        {"Type": "Prayer", "Value": "Rigour"},
+        {"Type": "Prayer", "Value": "Augury"},
+        {"Type": "Items", "Value": "Toxic blowpipe"},
+        {"Type": "Items", "Value": "Ava's assembler"},
+        {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+          {"Type": "Items", "Value": "Imbued saradomin cape"},
+          {"Type": "Items", "Value": "Imbued guthix cape"},
+          {"Type": "Items", "Value": "Imbued zamorak cape"}
+        ]},
+        {"Type": "Achieve amount", "MinReqNeeded": 3, "Value": [
+          {"Type": "Boss killcount combined", "Bosses": ["Chambers of Xeric", "Chambers of Xeric: Challenge Mode", "Theatre of Blood", "Theatre of Blood: Hard Mode"], "Value": 150},
+          {"Type": "Boss killcount", "Boss": "The Corrupted Gauntlet", "Value": 100},
+          {"Type": "Hiscores", "Value": 15},
+          {"Type": "Combat achievements", "Multiple": true, "Value": 45, "Difficulty": "Hard"}
+        ]}
+      ]
+    },
+    {
+      "RankName": "TzKal",
+      "RankIcon": "TzKal",
+      "RankPriority": 8,
+      "RankType": "Pvm",
+      "RankRequirements": [
+        {"Type": "Items", "Value": "Infernal cape"},
+        {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+          {"Type": "Items", "Value": "Bandos godsword"},
+          {"Type": "Items", "Value": "Bandos godsword (or)"}
+        ]},
+        {"Type": "Achieve amount", "MinReqNeeded": 2, "Value": [
+          {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Corrupted Hunllef"},
+          {"Type": "Achieve amount", "MinReqNeeded": 1, "Value": [
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Verzik"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Xarpus"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Sotesteg"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Nylocas"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Bloat"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Maiden"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Theatre"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Harder Mode II"},
+            {"Type": "Combat achievements", "Multiple": false, "Value": "Harder Mode I"}
+          ]},
+          {"Type": "Combat achievements", "Multiple": false, "Value": "Immortal Raider"},
+          {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Nightmare"},
+          {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Phosani's Nightmare"}
+        ]}
+      ]
+    }
+  ]
+}

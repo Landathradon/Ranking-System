@@ -10,23 +10,25 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.11'
+def runeLiteVersion = '1.8.18.5'
 
 dependencies {
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
-	compileOnly 'org.projectlombok:lombok:1.18.20'
-	annotationProcessor 'org.projectlombok:lombok:1.18.20'
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-	testImplementation 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.13.1'
 	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
+group = 'com.rankingsystem'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = "11"
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
+targetCompatibility = JavaVersion.VERSION_11
