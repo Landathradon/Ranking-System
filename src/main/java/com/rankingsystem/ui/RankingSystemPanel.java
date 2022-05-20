@@ -1,6 +1,7 @@
 package com.rankingsystem.ui;
 
-import com.rankingsystem.RankingSystemRankHandler;
+import com.rankingsystem.classes.PanelData;
+import com.rankingsystem.classes.RankData;
 import net.runelite.client.ui.ColorScheme;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,7 @@ public class RankingSystemPanel extends JPanel {
     private static RankingSystemPluginPanel pluginPanel;
 
     @Inject
-    public RankingSystemPanel(RankingSystemPluginPanel pluginPanel, RankingSystemRankHandler.PanelData panelData) {
+    public RankingSystemPanel(RankingSystemPluginPanel pluginPanel, PanelData panelData) {
         RankingSystemPanel.pluginPanel = pluginPanel;
 
         //TODO: Make a tutorial on how to use this inside the panel
@@ -31,13 +32,14 @@ public class RankingSystemPanel extends JPanel {
         JLabel titleLabel = createLabel("Ranking System", Color.orange, -1);
         JLabel clanLabel = createLabel("Clan: " + panelData.clanSettings.getName(), null, JLabel.LEFT);
         JLabel clanRankLabel = createLabel("Current rank: " + panelData.clanRank, null, JLabel.LEFT);
+        JLabel noteLabel = createLabel("<html>*Make sure to open your bank<br>if your items are there*<br><br>*If you have new collection items<br>Open your log for that item to update*</html>", null, JLabel.LEFT);
 
         JPanel rankList = new JPanel();
         rankList.setLayout(new GridLayout(panelData.rankEligibility.size(), 2));
         rankList.setBorder(new EmptyBorder(5, 0, panelData.rankEligibility.size() * 5, 0));
 
-        for (Map.Entry<Integer, RankingSystemRankHandler.RankData> entry : panelData.rankEligibility.entrySet()) {
-            RankingSystemRankHandler.RankData rankData = entry.getValue();
+        for (Map.Entry<Integer, RankData> entry : panelData.rankEligibility.entrySet()) {
+            RankData rankData = entry.getValue();
 
             BufferedImage skillIcon;
             try {
@@ -48,7 +50,7 @@ public class RankingSystemPanel extends JPanel {
             }
 
             JLabel rankLabel = new JLabel(new ImageIcon(skillIcon));
-            rankLabel.setText("Rank: " + rankData.RankName);
+            rankLabel.setText(rankData.RankName);
             rankLabel.setForeground(rankData.RankRequirements ? Color.green : Color.red);
             rankList.add(rankLabel);
         }
@@ -60,8 +62,18 @@ public class RankingSystemPanel extends JPanel {
         searchButton.addActionListener(e -> triggerSearch());
         searchButton.setHorizontalAlignment(JLabel.CENTER);
 
-        JLabel loadedBossData = createLabel("Boss data loaded ? " + panelData.loadedBossData, panelData.loadedBossData ? Color.green : Color.red, -1);
-        JLabel loadedCombatAchievementData = createLabel("CA data loaded ? " + panelData.loadedCombatTasks, panelData.loadedCombatTasks ? Color.green : Color.red, -1);
+//        JLabel loadedBossData = createLabel("Boss data loaded ? " + panelData.loadedBossData, panelData.loadedBossData ? Color.green : Color.red, -1);
+//        JLabel loadedCombatAchievementData = createLabel("CA data loaded ? " + panelData.loadedCombatTasks, panelData.loadedCombatTasks ? Color.green : Color.red, -1);
+
+//        JPanel tutorialList = new JPanel();
+//        tutorialList.setLayout(new GridLayout(5, 1));
+//        tutorialList.setBorder(new EmptyBorder(5, 0, 100, 0));
+//
+//        tutorialList.add(createLabel("", null, -1));
+//        tutorialList.add(createLabel("1. Open your prayers if you have rigour / augury unlocked and turn them on / off.", null, JLabel.LEFT));
+//        tutorialList.add(createLabel("2. Open your combat achievements, click on the menu on the top left, select tasks and make sure every filter is set to \"All\". If one filter wasn't, reopen them the same way.", null, JLabel.LEFT));
+//        tutorialList.add(createLabel("3. Open your collection log and click on every single boss, raid, clue, mini-game, other. Otherwise, it will not be counted if the clan has those requirements.", null, JLabel.LEFT));
+//        tutorialList.add(createLabel("4. Open your bank then you can click the button \"Check account\" which will show the current ranks for your clan and your eligibility.", null, JLabel.LEFT));
 
 
         final GridBagConstraints c = new GridBagConstraints();
@@ -80,10 +92,14 @@ public class RankingSystemPanel extends JPanel {
         c.gridy++;
         add(searchButton, c);
         c.gridy++;
-        add(loadedBossData, c);
+        add(noteLabel, c);
         c.gridy++;
-        add(loadedCombatAchievementData, c);
-        c.gridy++;
+//        add(tutorialList, c);
+//        c.gridy++;
+//        add(loadedBossData, c);
+//        c.gridy++;
+//        add(loadedCombatAchievementData, c);
+//        c.gridy++;
 
     }
 

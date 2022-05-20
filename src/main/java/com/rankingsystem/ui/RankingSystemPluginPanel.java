@@ -4,16 +4,18 @@ import com.rankingsystem.RankingSystemPlugin;
 
 import java.awt.BorderLayout;
 
-import com.rankingsystem.RankingSystemRankHandler;
+import com.rankingsystem.classes.PanelData;
 import lombok.Getter;
 import net.runelite.client.ui.PluginPanel;
+
+import javax.swing.*;
 
 public class RankingSystemPluginPanel extends PluginPanel {
     @Getter
     private final RankingSystemPlugin plugin;
-    private RankingSystemRankHandler.PanelData panelData;
+    private PanelData panelData;
 
-    public RankingSystemPluginPanel(RankingSystemPlugin plugin, RankingSystemRankHandler.PanelData panelData) {
+    public RankingSystemPluginPanel(RankingSystemPlugin plugin, PanelData panelData) {
         super();
         this.plugin = plugin;
         this.panelData = panelData;
@@ -21,18 +23,20 @@ public class RankingSystemPluginPanel extends PluginPanel {
         loadPanel();
     }
 
-    public void refreshPanel(RankingSystemRankHandler.PanelData panelData) {
+    public void refreshPanel(PanelData panelData) {
         this.panelData = panelData;
         removeAll();
         loadPanel();
     }
 
     public void loadPanel() {
-        RankingSystemPanel panel = new RankingSystemPanel(this, panelData);
+        SwingUtilities.invokeLater(() ->{
+            RankingSystemPanel panel = new RankingSystemPanel(this, panelData);
 
-        setLayout(new BorderLayout(5, 5));
+            setLayout(new BorderLayout(5, 5));
 
-        add(panel, BorderLayout.CENTER);
-        updateUI();
+            add(panel, BorderLayout.CENTER);
+            updateUI();
+        });
     }
 }

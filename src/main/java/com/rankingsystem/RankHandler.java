@@ -3,13 +3,12 @@ package com.rankingsystem;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.rankingsystem.classes.PanelData;
+import com.rankingsystem.classes.RankData;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.clan.ClanMember;
-import net.runelite.api.clan.ClanRank;
-import net.runelite.api.clan.ClanSettings;
-import net.runelite.api.clan.ClanTitle;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -23,17 +22,18 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.swing.*;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static net.runelite.api.Varbits.*;
 
-public class RankingSystemRankHandler {
+public class RankHandler {
     @Inject
     private Client client;
     @Inject
@@ -54,7 +54,6 @@ public class RankingSystemRankHandler {
     private static PanelData panelData = new PanelData();
     private Player player;
     private static boolean askedToFillBossKills = false;
-    private static boolean askedPrayers = false;
     private final int[] varbitsEasyDiaries = {
             Varbits.DIARY_ARDOUGNE_EASY,
             Varbits.DIARY_DESERT_EASY,
@@ -132,7 +131,11 @@ public class RankingSystemRankHandler {
         plugin.getPluginPanel().refreshPanel(panelData);
 
         if (plugin.getClient().getGameState() != GameState.LOGGED_IN) {
-            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "You must be logged in to search.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "You must be logged in to use this button.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!player.isClanMember()){
+            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "You must be in a clan to use this plugin.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (bossKills.size() <= 0) {
@@ -154,9 +157,9 @@ public class RankingSystemRankHandler {
                 return;
             }
         }
-        if ((!plugin.hasRigour || !plugin.hasAugury) && !askedPrayers) {
-            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "If you have Rigour or Augury please turn them on/off once.", "Information", JOptionPane.INFORMATION_MESSAGE);
-            askedPrayers = true;
+        if ((!plugin.hasPiety ||!plugin.hasRigour || !plugin.hasAugury) && !plugin.askedPrayers) {
+            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "If you have Piety, Rigour or Augury please turn them on/off once.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            plugin.askedPrayers = true;
             return;
         }
 
@@ -179,7 +182,7 @@ public class RankingSystemRankHandler {
         checkRanksEligibility(panelData.clanMembers);
         panelData.rankEligibility = rankEligibility;
 
-        if (plugin.getConfig().useTestingScript()) {
+        if (plugin.getConfig().useTestingScript) {
             for (Map.Entry<Integer, RankData> entry : rankEligibility.entrySet()) {
                 RankData rankData = entry.getValue();
                 sendMessage("Rank: " + rankData.RankName + " ? " + rankData.RankRequirements);
@@ -196,7 +199,7 @@ public class RankingSystemRankHandler {
         JSONParser jsonParser = new JSONParser();
 
         try (FileReader reader = new FileReader(System.getProperty("user.dir") + "\\src\\main\\resources\\" +
-                (plugin.getConfig().useTestingScript() ? "test" : "ranks") + ".json")) {
+                (plugin.getConfig().useTestingScript ? "test" : "ranks") + ".json")) {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
             JSONArray rankNames = (JSONArray) jsonObject.get("ClanRankValues");
 
@@ -232,11 +235,9 @@ public class RankingSystemRankHandler {
                 rankEligibility.put(rankData.RankPriority, rankData);
             }
 
-
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-
     }
 
     private boolean handleRequirements(JSONObject req, RankData rankData) {
@@ -361,6 +362,19 @@ public class RankingSystemRankHandler {
 
                 result = count >= minAmount;
                 break;
+            case "rank completed":
+                minAmount = (int) (long) req.get("Value");
+
+                if(rankEligibility.size() < minAmount){ break; }
+
+                for (Map.Entry<Integer, RankData> rank: rankEligibility.entrySet()) {
+                    if(rank.getValue().RankRequirements){
+                        count++;
+                    }
+                }
+
+                result = count >= minAmount;
+                break;
 
             default:
                 break;
@@ -427,6 +441,9 @@ public class RankingSystemRankHandler {
     private boolean checkPrayerUnlocked(String name) {
         boolean prayer = false;
         switch (name.toLowerCase()) {
+            case "piety":
+                prayer = plugin.hasPiety;
+                break;
             case "rigour":
                 prayer = plugin.hasRigour;
                 break;
@@ -462,54 +479,5 @@ public class RankingSystemRankHandler {
 
     private static void addResultsToBossMap(HiscoreSkill boss, net.runelite.client.hiscore.Skill bossData) {
         bossKills.put(boss.getName(), bossData.getLevel());
-    }
-
-    public static class RankData {
-        public String RankName;
-        public String RankIcon;
-        public Integer RankPriority;
-        public String RankType;
-        public Boolean RankRequirements = false;
-    }
-
-    public static class PanelData {
-        public Map<Integer, RankData> rankEligibility = new HashMap<>();
-        public ClanSettings clanSettings = new ClanSettings() {
-            @Override
-            public String getName() {
-                return "";
-            }
-
-            @Override
-            public List<ClanMember> getMembers() {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public ClanMember findMember(String name) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public ClanTitle titleForRank(ClanRank clanRank) {
-                return null;
-            }
-        };
-        public ClanMember clanMembers = new ClanMember() {
-            @Override
-            public String getName() {
-                return "";
-            }
-
-            @Override
-            public ClanRank getRank() {
-                return ClanRank.GUEST;
-            }
-        };
-        public String clanRank = "";
-        public boolean loadedBossData = false;
-        public boolean loadedCombatTasks = false;
     }
 }

@@ -24,7 +24,7 @@ public class ItemManagerHelper {
     @Inject
     private ItemManagerHelper(Client client) {
         this.client = client;
-//        ItemMapping.ITEM_TRIDENT;
+
         //TODO: Make this look better and grab every single id for these item
         itemMapping = Stream.of(new Object[][]{
                 {"graceful hood", new int[]{11850, 11851, 13579, 13580, 13591, 13592, 13603, 13604, 13615, 13616, 13627, 13628, 13667, 13668, 21061, 21063,}},

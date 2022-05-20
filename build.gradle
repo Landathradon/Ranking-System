@@ -10,7 +10,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.18.5'
+def runeLiteVersion = '1.8.20'
 
 dependencies {
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'

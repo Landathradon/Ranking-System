@@ -10,7 +10,7 @@
     {"CLAN_RANK_7":  "Collector"},
     {"CLAN_RANK_8":  "Maxed"},
     {"CLAN_RANK_9":  "TzKal"},
-    {"CLAN_RANK_10":  "Archer"},
+    {"CLAN_RANK_10":  "Beast"},
     {"CLAN_RANK_11":  "Legend"},
     {"CLAN_RANK_12":  "Captain"},
     {"CLAN_RANK_13":  "General"},
@@ -188,6 +188,15 @@
           {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Nightmare"},
           {"Type": "Combat achievements", "Multiple": false, "Value": "Perfect Phosani's Nightmare"}
         ]}
+      ]
+    },
+    {
+      "RankName": "Beast",
+      "RankIcon": "Beast",
+      "RankPriority": 9,
+      "RankType": "Both",
+      "RankRequirements": [
+        {"Type": "Rank completed", "Value": 8}
       ]
     }
   ]

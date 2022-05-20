@@ -5,10 +5,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.inject.Provides;
+import com.google.inject.Inject;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
 import javax.swing.*;
 
+import com.rankingsystem.classes.PanelData;
 import com.rankingsystem.ui.RankingSystemPluginPanel;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,7 +56,7 @@ public class RankingSystemPlugin extends Plugin {
     private RankingSystemConfig config;
     @Inject
     @Getter
-    private RankingSystemRankHandler rankingSearch;
+    private RankHandler rankingSearch;
     @Getter
     private RankingSystemPluginPanel pluginPanel;
     @Inject
@@ -63,16 +65,22 @@ public class RankingSystemPlugin extends Plugin {
     private ClientToolbar clientToolbar;
     private NavigationButton navButton;
     @Getter
-    private Map<Integer, Integer> trackedVarbits = new HashMap<>();
+    private final Map<Integer, Integer> trackedVarbits = new HashMap<>();
     @Getter
     private final Map<String, String> completedCombatAchievements = new HashMap<>();
-    private RankingSystemRankHandler.PanelData panelData = new RankingSystemRankHandler.PanelData();
+    private PanelData panelData = new PanelData();
     private int lastLoginTick = -1;
+
+    private String currentPlayerName = "";
     private boolean spawned = false;
     @Setter
     private boolean askedCheckCA = false;
+
+    @Setter
+    boolean askedPrayers = false;
     public boolean hasRigour = false;
     public boolean hasAugury = false;
+    public boolean hasPiety = false;
     private static final int[] COLLECTION_LOG_TABS_PACKED_IDS = {40697867, 40697871, 40697887, 40697882, 40697889};
     private static final File COLLECTION_LOG_SAVE_DIR = new File(RUNELITE_DIR, "rankingsystem");
     @Getter
@@ -100,7 +108,7 @@ public class RankingSystemPlugin extends Plugin {
             Varbits.DIARY_VARROCK_EASY, Varbits.DIARY_VARROCK_MEDIUM, Varbits.DIARY_VARROCK_HARD, Varbits.DIARY_VARROCK_ELITE,
             Varbits.DIARY_WESTERN_EASY, Varbits.DIARY_WESTERN_MEDIUM, Varbits.DIARY_WESTERN_HARD, Varbits.DIARY_WESTERN_ELITE,
             Varbits.DIARY_WILDERNESS_EASY, Varbits.DIARY_WILDERNESS_MEDIUM, Varbits.DIARY_WILDERNESS_HARD, Varbits.DIARY_WILDERNESS_ELITE,
-            Varbits.PRAYER_AUGURY, Varbits.PRAYER_RIGOUR
+            Varbits.PRAYER_AUGURY, Varbits.PRAYER_RIGOUR, Varbits.PRAYER_PIETY
     };
 
     @Provides
@@ -137,7 +145,9 @@ public class RankingSystemPlugin extends Plugin {
             case HOPPING:
             case LOGGING_IN:
             case LOGIN_SCREEN_AUTHENTICATOR:
-//                clearVariables();
+                if(!Objects.equals(currentPlayerName, "")){
+                    clearVariables();
+                }
             case CONNECTION_LOST:
                 // set to -1 here in-case of race condition with varbits changing before this handler is called
                 // when game state becomes LOGGED_IN
@@ -162,6 +172,9 @@ public class RankingSystemPlugin extends Plugin {
             trackedVarbits.put(varbit, newValue);
 
             if (newValue == 1) {
+                if (varbit == Varbits.PRAYER_PIETY && !hasPiety) {
+                    hasPiety = true;
+                }
                 if (varbit == Varbits.PRAYER_RIGOUR && !hasRigour) {
                     hasRigour = true;
                 }
@@ -179,7 +192,6 @@ public class RankingSystemPlugin extends Plugin {
                 || (ev.getContainerId() == InventoryID.INVENTORY.getId())) {
             itemManagerHelper.UpdateOwnedItems();
         }
-
     }
 
     @Subscribe
@@ -189,11 +201,12 @@ public class RankingSystemPlugin extends Plugin {
         }
 
         if (playerSpawned.getPlayer() == client.getLocalPlayer()) {
+            currentPlayerName = playerSpawned.getPlayer().getName();
             spawned = true;
             clientThread.invokeLater(() -> {
-                log.info("Get boss stats started");
-                RankingSystemRankHandler.refreshStats(playerSpawned.getPlayer());
+                RankHandler.refreshStats(playerSpawned.getPlayer());
                 loadCollectionLog();
+                log.info("Get boss stats started");
             });
         }
     }
@@ -248,7 +261,7 @@ public class RankingSystemPlugin extends Plugin {
                     for (Widget achievement : CA_ACHIEVEMENT_LIST.getChildren()) {
 
                         if (achievement.getTextColor() == COMBAT_ACHIEVEMENT_COMPLETED_COLOR_CODE) {
-                            completedCombatAchievements.put(achievement.getText(), getCATier(currentAchievement));
+                            completedCombatAchievements.put(achievement.getText(), getCombatAchievementTier(currentAchievement));
                         }
 
                         currentAchievement++;
@@ -296,10 +309,13 @@ public class RankingSystemPlugin extends Plugin {
         this.completedCombatAchievements.clear();
         this.hasRigour = false;
         this.hasAugury = false;
+        this.hasPiety = false;
+        this.askedPrayers = false;
         this.askedCheckCA = false;
-        this.panelData = new RankingSystemRankHandler.PanelData();
+        this.panelData = new PanelData();
+        this.currentPlayerName = "";
 
-        RankingSystemRankHandler.clear();
+        RankHandler.clear();
         pluginPanel.refreshPanel(panelData);
     }
 
@@ -307,7 +323,7 @@ public class RankingSystemPlugin extends Plugin {
         return variable >= minValueInclusive && variable <= maxValueInclusive;
     }
 
-    public static String getCATier(int currentTask) {
+    public static String getCombatAchievementTier(int currentTask) {
         String tierName = "";
         int previousMax = 0;
         for (int i = 0; i < COMBAT_TASK_NAMES.length; i++) {

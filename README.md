@@ -2,11 +2,12 @@
 
 ![Ranking System image](src/main/resources/plugin_demo.png)
 
+### Currently in testing phase. Will allow other clans to use this plugin later.
+
 ## Features
 - Let clan owners make their own custom ranks for their clan.
 - Show current accessible rank in color inside the panel to make easier for rank up.
 - Track items, combat achievement, collection log items, boss killcount, total level, base stats, prayers unlocked, diaries completed and more...
-
 
 ## How to use
 1. Open your prayers if you have rigour / augury unlocked and turn them on / off.
@@ -14,13 +15,12 @@
 3. Open your collection log and click on every single boss, raid, clue, mini-game, other. Otherwise, it will not be counted if the clan has those requirements.
 4. Open your bank then you can click the button "Check account" which will show the current ranks for your clan and your eligibility.
 
-## Things to add
-- [ ] Fix as many bugs as possible to make this smooth / Code review
+## Things to add/do
+- [x] Fix as many bugs as possible to make this smooth / Code review
 - [ ] Add more things to the local storage. e.g: Prayers unlocked
 - [ ] Let other clans use the plugin with their own custom ranks
 
 [//]: # (- [ ] Discord notifications?)
-
 
 More things to come :)
 

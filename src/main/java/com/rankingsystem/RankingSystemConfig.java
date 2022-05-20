@@ -1,15 +1,15 @@
 package com.rankingsystem;
 
-import lombok.Getter;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("example")
+@ConfigGroup("rankingsystem")
 public interface RankingSystemConfig extends Config
 {
 	String PluginName = "Ranking System";
 	String ClanName = "Iron Refuge";
+	boolean useTestingScript = false;
 
 //	@ConfigItem(
 //			keyName = "use_testing_script",
@@ -17,8 +17,8 @@ public interface RankingSystemConfig extends Config
 //			description = "Use the testing script",
 //			position = 1
 //	)
-	default boolean useTestingScript()
-	{
-		return false;
-	}
+//	default boolean useTestingScript()
+//	{
+//		return true;
+//	}
 }
