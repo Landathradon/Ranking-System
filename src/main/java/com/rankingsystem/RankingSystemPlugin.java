@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import com.google.inject.Provides;
 import com.google.inject.Inject;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 
 import com.rankingsystem.classes.PanelData;

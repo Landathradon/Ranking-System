@@ -3,6 +3,7 @@ package com.rankingsystem;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rankingsystem.classes.PanelData;
 import com.rankingsystem.classes.RankData;
 import lombok.Getter;
@@ -17,15 +18,12 @@ import net.runelite.client.hiscore.HiscoreClient;
 import net.runelite.client.hiscore.HiscoreEndpoint;
 import net.runelite.client.hiscore.HiscoreSkill;
 import okhttp3.OkHttpClient;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,34 +194,37 @@ public class RankHandler {
 
     private void checkRanksEligibility(ClanMember clanMembers) {
 
-        JSONParser jsonParser = new JSONParser();
+        JsonParser jsonParser = new JsonParser();
 
         try (FileReader reader = new FileReader(System.getProperty("user.dir") + "\\src\\main\\resources\\" +
                 (plugin.getConfig().useTestingScript ? "test" : "ranks") + ".json")) {
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
-            JSONArray rankNames = (JSONArray) jsonObject.get("ClanRankValues");
+            JsonObject jsonObject = jsonParser.parse(reader).getAsJsonObject();
+            JsonArray rankNames = jsonObject.get("ClanRankValues").getAsJsonArray();
 
-            for (JSONObject rank : (Iterable<JSONObject>) rankNames) {
+            for (JsonElement rankElem : rankNames) {
+                JsonObject rank = rankElem.getAsJsonObject();
 
-                if (clanMembers != null && rank.containsKey(clanMembers.getRank().name())) {
-                    panelData.clanRank = (String) rank.get(clanMembers.getRank().name());
+                if (clanMembers != null && rank.has(clanMembers.getRank().name())) {
+                    panelData.clanRank = rank.get(clanMembers.getRank().name()).getAsString();
                 }
             }
 
-            JSONArray ranks = (JSONArray) jsonObject.get("Ranks");
+            JsonArray ranks = jsonObject.get("Ranks").getAsJsonArray();
 
-            for (JSONObject rank : (Iterable<JSONObject>) ranks) {
+            for (JsonElement rankElem : ranks) {
+                JsonObject rank = rankElem.getAsJsonObject();
                 RankData rankData = new RankData();
 
-                rankData.RankName = (String) rank.get("RankName");
-                rankData.RankIcon = (String) rank.get("RankIcon");
-                rankData.RankPriority = (int) (long) rank.get("RankPriority");
-                rankData.RankType = (String) rank.get("RankType");
+                rankData.RankName = rank.get("RankName").getAsString();
+                rankData.RankIcon = rank.get("RankIcon").getAsString();
+                rankData.RankPriority = rank.get("RankPriority").getAsInt();
+                rankData.RankType = rank.get("RankType").getAsString();
 
-                JSONArray requirements = (JSONArray) rank.get("RankRequirements");
+                JsonArray requirements = rank.get("RankRequirements").getAsJsonArray();
 
                 int valid = 0;
-                for (JSONObject req : (Iterable<JSONObject>) requirements) {
+                for (JsonElement reqElem : requirements) {
+                    JsonObject req = reqElem.getAsJsonObject();
                     if (handleRequirements(req, rankData)) {
                         valid++;
                     }
@@ -235,50 +236,52 @@ public class RankHandler {
                 rankEligibility.put(rankData.RankPriority, rankData);
             }
 
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private boolean handleRequirements(JSONObject req, RankData rankData) {
-        String type = (String) req.get("Type");
+    private boolean handleRequirements(JsonObject req, RankData rankData) {
+        String type = req.get("Type").getAsString();
         boolean result = false;
         int count = 0;
         int minAmount;
-        JSONArray listOfBosses;
+        JsonArray listOfBosses;
 
         switch (type.toLowerCase()) {
             case "total level":
-                int totalLevel = (int) (long) req.get("Value");
+                int totalLevel = req.get("Value").getAsInt();
                 result = client.getTotalLevel() >= totalLevel;
                 break;
             case "achievement diary":
-                int diaryCompleted = (int) (long) req.get("Value");
-                int[] difficulty = getDifficultyVarbits((String) req.get("Difficulty"));
+                int diaryCompleted = req.get("Value").getAsInt();
+                int[] difficulty = getDifficultyVarbits(req.get("Difficulty").getAsString());
                 result = checkRankDiariesCompleted(difficulty, diaryCompleted);
                 break;
             case "boss killcount":
-                int requiredKillcount = (int) (long) req.get("Value");
-                String bossName = (String) req.get("Boss");
+                int requiredKillcount = req.get("Value").getAsInt();
+                String bossName = req.get("Boss").getAsString();
                 result = bossKills.get(bossName) >= requiredKillcount;
                 break;
             case "base stats":
-                int minLevel = (int) (long) req.get("Value");
+                int minLevel = req.get("Value").getAsInt();
                 result = Collections.min(baseLevels.values()) >= minLevel;
                 break;
             case "items":
-                String item = (String) req.get("Value");
+                String item = req.get("Value").getAsString();
                 result = itemManagerHelper.HasItem(item);
                 break;
             case "prayer":
-                String prayer = (String) req.get("Value");
+                String prayer = req.get("Value").getAsString();
                 result = checkPrayerUnlocked(prayer);
                 break;
             case "achieve amount":
-                minAmount = (int) (long) req.get("MinReqNeeded");
-                JSONArray requirements = (JSONArray) req.get("Value");
+                minAmount = req.get("MinReqNeeded").getAsInt();
+                JsonArray requirements = req.get("Value").getAsJsonArray();
 
-                for (JSONObject achieveReq : (Iterable<JSONObject>) requirements) {
+                for (JsonElement achieveReqElem : requirements) {
+                    JsonObject achieveReq = achieveReqElem.getAsJsonObject();
+
                     if (handleRequirements(achieveReq, rankData)) {
                         count++;
                     }
@@ -286,7 +289,7 @@ public class RankHandler {
                 result = count >= minAmount;
                 break;
             case "hiscores":
-                int minBossOnHiscores = (int) (long) req.get("Value");
+                int minBossOnHiscores = req.get("Value").getAsInt();
 
                 if (Objects.equals(rankData.RankType, "Pvm")) {
                     for (Map.Entry<String, Integer> boss : bossKills.entrySet()) {
@@ -298,10 +301,11 @@ public class RankHandler {
                 result = count >= minBossOnHiscores;
                 break;
             case "boss killcount combined":
-                minAmount = (int) (long) req.get("Value");
-                listOfBosses = (JSONArray) req.get("Bosses");
+                minAmount = req.get("Value").getAsInt();
+                listOfBosses = req.get("Bosses").getAsJsonArray();
 
-                for (String boss : (Iterable<String>) listOfBosses) {
+                for (JsonElement bossElem : listOfBosses) {
+                    String boss = bossElem.getAsString();
                     if (bossKills.get(boss) != -1) {
                         count += bossKills.get(boss);
                     }
@@ -310,10 +314,10 @@ public class RankHandler {
                 result = count >= minAmount;
                 break;
             case "combat achievements":
-                boolean multipleAchievements = (Boolean) req.get("Multiple");
+                boolean multipleAchievements = req.get("Multiple").getAsBoolean();
                 if (multipleAchievements) {
-                    minAmount = (int) (long) req.get("Value");
-                    String achievementDifficulty = (String) req.get("Difficulty");
+                    minAmount = req.get("Value").getAsInt();
+                    String achievementDifficulty = req.get("Difficulty").getAsString();
 
                     for (Map.Entry<String, String> Entry : plugin.getCompletedCombatAchievements().entrySet()) {
                         if (Objects.equals(Entry.getValue(), achievementDifficulty)) {
@@ -322,19 +326,20 @@ public class RankHandler {
                     }
                     result = count >= minAmount;
                 } else {
-                    String achievementName = (String) req.get("Value");
+                    String achievementName = req.get("Value").getAsString();
                     result = plugin.getCompletedCombatAchievements().containsKey(achievementName);
                 }
                 break;
             case "unique items":
-                boolean multipleBosses = (Boolean) req.get("MultipleBosses");
-                minAmount = (int) (long) req.get("Value");
+                boolean multipleBosses = req.get("MultipleBosses").getAsBoolean();
+                minAmount = req.get("Value").getAsInt();
                 JsonArray itemList;
 
                 if (multipleBosses) {
-                    listOfBosses = (JSONArray) req.get("Bosses");
+                    listOfBosses = (JsonArray) req.get("Bosses");
 
-                    for (String boss : (Iterable<String>) listOfBosses) {
+                    for (JsonElement bossElem : listOfBosses) {
+                        String boss = bossElem.getAsString();
                         itemList = plugin.getCollectionLogEntry().get(boss);
                         if (itemList == null) {
                             continue;
@@ -347,7 +352,7 @@ public class RankHandler {
                         }
                     }
                 } else {
-                    String bossNameUnique = (String) req.get("Boss");
+                    String bossNameUnique = req.get("Boss").getAsString();
                     itemList = plugin.getCollectionLogEntry().get(bossNameUnique);
                     if (itemList == null) {
                         break;
@@ -363,7 +368,7 @@ public class RankHandler {
                 result = count >= minAmount;
                 break;
             case "rank completed":
-                minAmount = (int) (long) req.get("Value");
+                minAmount = req.get("Value").getAsInt();
 
                 if(rankEligibility.size() < minAmount){ break; }
 
