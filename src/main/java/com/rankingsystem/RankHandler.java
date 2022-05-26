@@ -10,6 +10,7 @@ import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.clan.ClanMember;
+import net.runelite.api.clan.ClanSettings;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -21,9 +22,10 @@ import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -177,7 +179,7 @@ public class RankHandler {
             panelData.clanMembers = client.getClanSettings().findMember(player.getName());
         }
 
-        checkRanksEligibility(panelData.clanMembers);
+        checkRanksEligibility(panelData.clanSettings, panelData.clanMembers);
         panelData.rankEligibility = rankEligibility;
 
         if (plugin.getConfig().useTestingScript) {
@@ -192,13 +194,18 @@ public class RankHandler {
         plugin.getPluginPanel().refreshPanel(panelData);
     }
 
-    private void checkRanksEligibility(ClanMember clanMembers) {
+    private void checkRanksEligibility(ClanSettings clanSettings, ClanMember clanMembers) {
 
-        JsonParser jsonParser = new JsonParser();
+        try {
+            String sURL = "https://plugins.ironstats.ca/rankingsystem/getranks.php?clanname=" + clanSettings.getName().replace(" ","_").toLowerCase(); // iron_refuge - only clan that will work for now
+            URL url = new URL(sURL);
+            URLConnection request = url.openConnection();
+            request.connect();
 
-        try (FileReader reader = new FileReader(System.getProperty("user.dir") + "\\src\\main\\resources\\" +
-                (plugin.getConfig().useTestingScript ? "test" : "ranks") + ".json")) {
-            JsonObject jsonObject = jsonParser.parse(reader).getAsJsonObject();
+            JsonParser jsonParser = new JsonParser();
+            JsonElement root = jsonParser.parse(new InputStreamReader((InputStream) request.getContent()));
+            JsonObject jsonObject = root.getAsJsonObject();
+
             JsonArray rankNames = jsonObject.get("ClanRankValues").getAsJsonArray();
 
             for (JsonElement rankElem : rankNames) {
@@ -236,7 +243,7 @@ public class RankHandler {
                 rankEligibility.put(rankData.RankPriority, rankData);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

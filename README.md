@@ -15,6 +15,9 @@
 3. Open your collection log and click on every single boss, raid, clue, mini-game, other. Otherwise, it will not be counted if the clan has those requirements.
 4. Open your bank then you can click the button "Check account" which will show the current ranks for your clan and your eligibility.
 
+## Why is there a warning when installing this plugin?
+This is because the plugin automatically sends the name of your clan and your IP address to my website which are not stored anywhere to get the ranks that have been set by the owner of your clan.
+
 ## Things to add/do
 - [x] Fix as many bugs as possible to make this smooth / Code review
 - [ ] Add more things to the local storage. e.g: Prayers unlocked
