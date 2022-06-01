@@ -146,7 +146,7 @@ public class RankHandler {
             return;
         }
         if (plugin.getCompletedCombatAchievements().size() <= 0) {
-            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "Please open your combat tasks and make sure every filter is set to \"All\"", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(plugin.getPluginPanel(), "Please open your combat tasks and make sure every filter is set to \"All\"\nThen re-open the tasks through the top left menu.", "Error", JOptionPane.ERROR_MESSAGE);
             plugin.setAskedCheckCA(true);
             return;
         }
@@ -343,7 +343,7 @@ public class RankHandler {
                 JsonArray itemList;
 
                 if (multipleBosses) {
-                    listOfBosses = (JsonArray) req.get("Bosses");
+                    listOfBosses = req.get("Bosses").getAsJsonArray();
 
                     for (JsonElement bossElem : listOfBosses) {
                         String boss = bossElem.getAsString();
@@ -447,7 +447,7 @@ public class RankHandler {
             }
         }
 
-        return count > howMany;
+        return count >= howMany;
     }
 
     private boolean checkPrayerUnlocked(String name) {

@@ -147,6 +147,7 @@ public class RankingSystemPlugin extends Plugin {
                 if(!Objects.equals(currentPlayerName, "")){
                     clearVariables();
                 }
+                break;
             case CONNECTION_LOST:
                 // set to -1 here in-case of race condition with varbits changing before this handler is called
                 // when game state becomes LOGGED_IN
@@ -205,7 +206,6 @@ public class RankingSystemPlugin extends Plugin {
             clientThread.invokeLater(() -> {
                 RankHandler.refreshStats(playerSpawned.getPlayer());
                 loadCollectionLog();
-                log.info("Get boss stats started");
             });
         }
     }
@@ -245,7 +245,9 @@ public class RankingSystemPlugin extends Plugin {
                 if (Stream.of(CA_FILTER_TIER, CA_FILTER_TYPE, CA_FILTER_MONSTER, CA_FILTER_COMPLETED)
                         .anyMatch(x -> !Objects.equals(x.getChild(4).getText(), "All"))) {
                     if (askedCheckCA) {
-                        JOptionPane.showMessageDialog(pluginPanel, "Please reopen your combat tasks and make sure every filter is set to \"All\"", "Error", JOptionPane.ERROR_MESSAGE);
+                        SwingUtilities.invokeLater(() ->{
+                            JOptionPane.showMessageDialog(pluginPanel, "Make sure every filter is set to \"All\" then re-open your combat tasks from the top left menu.", "Error", JOptionPane.ERROR_MESSAGE);
+                        });
                     }
                     return;
                 }
