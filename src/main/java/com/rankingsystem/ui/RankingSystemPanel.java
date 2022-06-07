@@ -42,14 +42,18 @@ public class RankingSystemPanel extends JPanel {
             RankData rankData = entry.getValue();
 
             BufferedImage skillIcon;
+            JLabel rankLabel;
             try {
                 URL url = new URL("https://oldschool.runescape.wiki/images/Clan_icon_-_" + rankData.RankIcon + ".png");
-                skillIcon = ImageIO.read(url);
+                skillIcon = ImageIO.read(url.openStream());
+                rankLabel = new JLabel(new ImageIcon(skillIcon));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // Can happen when the user's network firewall block external links, Display no image if this happens.
+//                throw new RuntimeException(e);
+                rankLabel = new JLabel();
             }
 
-            JLabel rankLabel = new JLabel(new ImageIcon(skillIcon));
+            rankLabel.setHorizontalAlignment(0);
             rankLabel.setText(rankData.RankName);
             rankLabel.setForeground(rankData.RankRequirements ? Color.green : Color.red);
             rankList.add(rankLabel);
@@ -65,15 +69,15 @@ public class RankingSystemPanel extends JPanel {
 //        JLabel loadedBossData = createLabel("Boss data loaded ? " + panelData.loadedBossData, panelData.loadedBossData ? Color.green : Color.red, -1);
 //        JLabel loadedCombatAchievementData = createLabel("CA data loaded ? " + panelData.loadedCombatTasks, panelData.loadedCombatTasks ? Color.green : Color.red, -1);
 
-//        JPanel tutorialList = new JPanel();
-//        tutorialList.setLayout(new GridLayout(5, 1));
-//        tutorialList.setBorder(new EmptyBorder(5, 0, 100, 0));
-//
-//        tutorialList.add(createLabel("", null, -1));
-//        tutorialList.add(createLabel("1. Open your prayers if you have rigour / augury unlocked and turn them on / off.", null, JLabel.LEFT));
-//        tutorialList.add(createLabel("2. Open your combat achievements, click on the menu on the top left, select tasks and make sure every filter is set to \"All\". If one filter wasn't, reopen them the same way.", null, JLabel.LEFT));
-//        tutorialList.add(createLabel("3. Open your collection log and click on every single boss, raid, clue, mini-game, other. Otherwise, it will not be counted if the clan has those requirements.", null, JLabel.LEFT));
-//        tutorialList.add(createLabel("4. Open your bank then you can click the button \"Check account\" which will show the current ranks for your clan and your eligibility.", null, JLabel.LEFT));
+        JPanel tutorialList = new JPanel();
+        tutorialList.setLayout(new GridLayout(5, 1));
+        tutorialList.setBorder(new EmptyBorder(5, 0, 100, 0));
+
+        tutorialList.add(createLabel("", null, -1));
+        tutorialList.add(createLabel("<html>1. Open your prayers if you have piety, rigour or augury unlocked and turn them on / off.</html>", null, JLabel.LEFT));
+        tutorialList.add(createLabel("<html>2. Open your combat achievements, click on the menu on the top left, select tasks and make sure every filter is set to \"All\". If one filter wasn't, re-open the tasks the same way.</html>", null, JLabel.LEFT));
+        tutorialList.add(createLabel("<html><br>3. Open your collection log and click on every single boss, raid, clue, mini-game, other. Otherwise, it will not be counted if the clan has those requirements.</html>", null, JLabel.LEFT));
+        tutorialList.add(createLabel("<html>4. Open your bank then you can click the button \"Check account\" which will show the current ranks for your clan and your eligibility.</html>", null, JLabel.LEFT));
 
 
         final GridBagConstraints c = new GridBagConstraints();
@@ -94,8 +98,8 @@ public class RankingSystemPanel extends JPanel {
         c.gridy++;
         add(noteLabel, c);
         c.gridy++;
-//        add(tutorialList, c);
-//        c.gridy++;
+        add(tutorialList, c);
+        c.gridy++;
 //        add(loadedBossData, c);
 //        c.gridy++;
 //        add(loadedCombatAchievementData, c);

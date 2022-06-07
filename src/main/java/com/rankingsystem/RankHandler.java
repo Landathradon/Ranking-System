@@ -134,10 +134,12 @@ public class RankHandler {
             JOptionPane.showMessageDialog(plugin.getPluginPanel(), "You must be logged in to use this button.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         if(!player.isClanMember()){
             JOptionPane.showMessageDialog(plugin.getPluginPanel(), "You must be in a clan to use this plugin.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         if (bossKills.size() <= 0) {
             JOptionPane.showMessageDialog(plugin.getPluginPanel(), "Please try again in a few seconds", "Error", JOptionPane.ERROR_MESSAGE);
             if (!askedToFillBossKills) {
@@ -145,11 +147,15 @@ public class RankHandler {
             }
             return;
         }
+
         if (plugin.getCompletedCombatAchievements().size() <= 0) {
             JOptionPane.showMessageDialog(plugin.getPluginPanel(), "Please open your combat tasks and make sure every filter is set to \"All\"\nThen re-open the tasks through the top left menu.", "Error", JOptionPane.ERROR_MESSAGE);
             plugin.setAskedCheckCA(true);
             return;
+        } else { // If there are already values fetched, don't show the pop-up next times someone open their achievements.
+            plugin.setAskedCheckCA(false);
         }
+
         if (plugin.getCollectionLogEntry().size() <= 0) {
             plugin.loadCollectionLog();
             if (plugin.getCollectionLogEntry().size() <= 0) {
@@ -163,6 +169,10 @@ public class RankHandler {
             return;
         }
 
+        if(plugin.getCompletedCombatAchievements().containsKey(plugin.CANT_FIND)){
+            sendMessage("[Ranking System] Your combat achievements cannot be loaded. Some ranks might not show up correctly.");
+        }
+
         itemManagerHelper.UpdateOwnedItems();
         plugin.getPluginPanel().refreshPanel(panelData);
 
@@ -174,7 +184,7 @@ public class RankHandler {
             baseLevels.put(s, bases[s.ordinal()]);
         }
 
-        if (player.isClanMember() && Objects.equals(client.getClanSettings().getName(), config.ClanName)) {
+        if (player.isClanMember() && Objects.equals(Objects.requireNonNull(client.getClanSettings()).getName(), config.ClanName)) {
             panelData.clanSettings = client.getClanSettings();
             panelData.clanMembers = client.getClanSettings().findMember(player.getName());
         }

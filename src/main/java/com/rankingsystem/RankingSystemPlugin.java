@@ -93,6 +93,7 @@ public class RankingSystemPlugin extends Plugin {
     private final int COMBAT_ACHIEVEMENT_COMPLETED_COLOR_CODE = 901389;
     private static final int[] COMBAT_TASK_AMOUNT = {0, 33, 41, 58, 112, 101, 76};
     private static final String[] COMBAT_TASK_NAMES = {"Easy", "Medium", "Hard", "Elite", "Master", "Grandmaster"};
+    public final String CANT_FIND = "Cant find";
 
     private final int[] varbitsToTrack = {
             Varbits.DIARY_ARDOUGNE_EASY, Varbits.DIARY_ARDOUGNE_MEDIUM, Varbits.DIARY_ARDOUGNE_HARD, Varbits.DIARY_ARDOUGNE_ELITE,
@@ -234,7 +235,7 @@ public class RankingSystemPlugin extends Plugin {
         if (widgetID == COMBAT_ACHIEVEMENT_WIDGET_ID) {
             completedCombatAchievements.clear();
 
-            // Children are rendered  on tick after widget load. Invoke later to prevent null children on adventure log widget
+            // Children are rendered on tick after widget load. Invoke later to prevent null children on widget
             clientThread.invokeLater(() -> {
 
                 Widget CA_FILTER_TIER = client.getWidget(CA_FILTER_TIER_PACKED_ID);
@@ -253,19 +254,23 @@ public class RankingSystemPlugin extends Plugin {
                 }
 
                 clientThread.invokeLater(() -> {
+                    try {
+                        Widget CA_ACHIEVEMENT_LIST = client.getWidget(CA_ACHIEVEMENT_LIST_PACKED_ID);
 
-                    Widget CA_ACHIEVEMENT_LIST = client.getWidget(CA_ACHIEVEMENT_LIST_PACKED_ID);
+                        if (CA_ACHIEVEMENT_LIST == null){ return; }
 
-                    if (CA_ACHIEVEMENT_LIST == null){ return; }
+                        int currentAchievement = 1;
+                        for (Widget achievement : Objects.requireNonNull(CA_ACHIEVEMENT_LIST.getChildren())) {
 
-                    int currentAchievement = 1;
-                    for (Widget achievement : CA_ACHIEVEMENT_LIST.getChildren()) {
+                            if (achievement.getTextColor() == COMBAT_ACHIEVEMENT_COMPLETED_COLOR_CODE) {
+                                completedCombatAchievements.put(achievement.getText(), getCombatAchievementTier(currentAchievement));
+                            }
 
-                        if (achievement.getTextColor() == COMBAT_ACHIEVEMENT_COMPLETED_COLOR_CODE) {
-                            completedCombatAchievements.put(achievement.getText(), getCombatAchievementTier(currentAchievement));
+                            currentAchievement++;
                         }
-
-                        currentAchievement++;
+                    } catch (Exception exception) {
+                        // In some rare instance, "CA_ACHIEVEMENT_LIST" is not loaded and returns null then prevents the user from continuing.
+                        completedCombatAchievements.put(CANT_FIND, "None");
                     }
                 });
             });
