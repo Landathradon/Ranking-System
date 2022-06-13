@@ -8,7 +8,6 @@ import net.runelite.client.config.ConfigItem;
 public interface RankingSystemConfig extends Config
 {
 	String PluginName = "Ranking System";
-	String ClanName = "Iron Refuge";
 	boolean useTestingScript = false;
 
 //	@ConfigItem(

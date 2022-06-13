@@ -1,4 +1,4 @@
-# Ranking System
+# Ranking System [![Plugin Installs](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/ranking-system)](https://runelite.net/plugin-hub/Lore%20Bot) [![Plugin Rank](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/rank/plugin/ranking-system)](https://runelite.net/plugin-hub)
 
 ![Ranking System image](src/main/resources/plugin_demo.png)
 
@@ -20,6 +20,7 @@ This is because the plugin automatically sends the name of your clan and your IP
 
 ## Things to add/do
 - [x] Fix as many bugs as possible to make this smooth / Code review
+- [ ] Add new panel to show each individual requirement
 - [ ] Add more things to the local storage. e.g: Prayers unlocked
 - [ ] Let other clans use the plugin with their own custom ranks
 

@@ -26,10 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static net.runelite.api.Varbits.*;
 
@@ -184,10 +181,9 @@ public class RankHandler {
             baseLevels.put(s, bases[s.ordinal()]);
         }
 
-        if (player.isClanMember() && Objects.equals(Objects.requireNonNull(client.getClanSettings()).getName(), config.ClanName)) {
-            panelData.clanSettings = client.getClanSettings();
-            panelData.clanMembers = client.getClanSettings().findMember(player.getName());
-        }
+        panelData.clanSettings = client.getClanSettings();
+        panelData.clanMembers = Objects.requireNonNull(client.getClanSettings()).findMember(player.getName());
+
 
         checkRanksEligibility(panelData.clanSettings, panelData.clanMembers);
         panelData.rankEligibility = rankEligibility;
@@ -286,7 +282,8 @@ public class RankHandler {
                 break;
             case "items":
                 String item = req.get("Value").getAsString();
-                result = itemManagerHelper.HasItem(item);
+                JsonArray listOfItems = req.getAsJsonArray("ListOfIDs");
+                result = itemManagerHelper.HasItem(item, listOfItems);
                 break;
             case "prayer":
                 String prayer = req.get("Value").getAsString();
@@ -310,7 +307,7 @@ public class RankHandler {
 
                 if (Objects.equals(rankData.RankType, "Pvm")) {
                     for (Map.Entry<String, Integer> boss : bossKills.entrySet()) {
-                        if (boss.getValue() > 5) {
+                        if (boss.getValue() > 1) {
                             count++;
                         }
                     }
@@ -349,6 +346,8 @@ public class RankHandler {
                 break;
             case "unique items":
                 boolean multipleBosses = req.get("MultipleBosses").getAsBoolean();
+                JsonArray listOfExceptions = req.getAsJsonArray("Exceptions");
+                int [] exceptionItems = ItemManagerHelper.JsonArrayToIntArray(listOfExceptions);
                 minAmount = req.get("Value").getAsInt();
                 JsonArray itemList;
 
@@ -363,6 +362,12 @@ public class RankHandler {
                         }
                         for (JsonElement uniqueItem : itemList) {
                             JsonObject currentUnique = uniqueItem.getAsJsonObject();
+
+                            if (exceptionItems.length > 0 && Arrays.stream(exceptionItems).anyMatch(x -> x == currentUnique.get("id").getAsInt())){
+                                // If found within the exceptions, do not count this item.
+                                continue;
+                            }
+
                             if (currentUnique.get("obtained").getAsBoolean()) {
                                 count++;
                             }
@@ -500,6 +505,10 @@ public class RankHandler {
     }
 
     private static void addResultsToBossMap(HiscoreSkill boss, net.runelite.client.hiscore.Skill bossData) {
+        if (Arrays.stream(Skill.values()).anyMatch(x -> x.getName().equals(boss.getName()))){
+            return;
+        }
+
         bossKills.put(boss.getName(), bossData.getLevel());
     }
 }
